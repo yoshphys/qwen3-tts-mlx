@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# uv
+.python-version
+
+# MLX / Hugging Face model cache
+*.safetensors
+*.gguf
+models/
+hf_cache/
+~/.cache/huggingface/
+
+# Audio output files
+*.wav
+*.mp3
+*.flac
+*.ogg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment variables
+.env
+.env.*

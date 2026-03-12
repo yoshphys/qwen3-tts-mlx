@@ -1,0 +1,180 @@
+# example.toml — Qwen3-TTS model variant showcase
+#
+# Output:
+#   example/<stem>_<N>.wav          (single text)
+#   example/<stem>_<N>_<idx>.wav    (batch texts)
+#
+# ──────────────────────────────────────────────────────────────
+# Keys available in [settings] and [[segments]]
+# ──────────────────────────────────────────────────────────────
+#
+# [Model]
+#   model = "mlx-community/..."
+#     HuggingFace model ID to use.
+#     The variant is detected automatically from the model ID:
+#       *-Base-*        → generate()              preset voice / voice cloning
+#       *-CustomVoice-* → generate_custom_voice()  speaker + emotion/style control
+#       *-VoiceDesign-* → generate_voice_design()  design any voice from text
+#     Available models:
+#       mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit
+#       mlx-community/Qwen3-TTS-12Hz-0.6B-Base-6bit
+#       mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16
+#       mlx-community/Qwen3-TTS-12Hz-1.7B-Base-4bit
+#       mlx-community/Qwen3-TTS-12Hz-1.7B-Base-8bit
+#       mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit
+#       mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16
+#       mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-6bit
+#       mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-bf16
+#
+# [Language]
+#   lang_code = "auto"
+#     Language hint. Omit or set to "auto" for automatic detection.
+#     Common values: "Japanese" / "English" / "Chinese"
+#
+# [Output format]
+#   format = "wav"
+#     Output file format. Options: "wav" / "flac" / "mp3"
+#
+# [Speaker / voice]
+#   voice = "Vivian"
+#     Preset speaker name (for single text).
+#     Valid for Base and CustomVoice models.
+#     Japanese: Vivian, Serena, Uncle_Fu, Dylan (Beijing dialect), Eric (Sichuan dialect)
+#     English : Ryan, Aiden
+#
+#   voices = ["Ryan", "Aiden"]
+#     Per-text speaker list for batch texts. Must match the length of texts.
+#     Takes precedence over voice when both are specified.
+#
+#   instruct = "Calm and warm."
+#     Emotion/style instruction (CustomVoice) or voice design description (VoiceDesign).
+#     For single text.
+#
+#   instructs = ["Calm.", "Excited!"]
+#     Per-text instruct list for batch texts. Must match the length of texts.
+#     Takes precedence over instruct when both are specified.
+#
+#   ref_audio = "sample.wav"
+#     Reference WAV file for voice cloning (Base models only).
+#
+#   ref_text = "This is what my voice sounds like."
+#     Transcript of ref_audio. Provide together with ref_audio.
+#
+# [Generation parameters]
+#   speed = 1.0
+#     Speech speed multiplier. Range: 0.5 (slow) to 2.0 (fast). Default: 1.0
+#
+#   temperature = 0.9
+#     Sampling temperature. Higher values increase randomness. Default: 0.9
+#
+#   top_k = 50
+#     Sample from the top-k tokens at each step. Default: 50
+#
+#   top_p = 1.0
+#     Nucleus sampling probability threshold. Default: 1.0
+#
+#   repetition_penalty = 1.05
+#     Penalty for repeated tokens. 1.0 disables it. Default: 1.05
+#
+# [Streaming]
+#   stream = false
+#     When true, audio is generated and saved in chunks. Default: false
+#
+#   streaming_interval = 2.0
+#     Chunk interval in seconds. Smaller values give lower latency. Default: 2.0
+#
+# ──────────────────────────────────────────────────────────────
+# Keys exclusive to [[segments]] (not valid in [settings])
+# ──────────────────────────────────────────────────────────────
+#
+#   text = "..."
+#     Single text. Uses generate(). Output: <stem>_<N>.wav
+#
+#   texts = ["...", "..."]
+#     Array of texts. Uses batch_generate().
+#     Output: <stem>_<N>_0.wav, <stem>_<N>_1.wav, ...
+#     When both text and texts are specified, texts takes precedence.
+#
+# ──────────────────────────────────────────────────────────────
+
+[settings]
+format    = "wav"
+lang_code = "Japanese"
+
+
+# ============================================================
+# 1. Base — single text
+#    Simple example with a preset voice
+# ============================================================
+[[segments]]
+model = "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit"
+voice = "Vivian"
+text  = "本日はお日柄もよく、皆さまにお集まりいただき誠にありがとうございます。"
+
+
+# ============================================================
+# 2. Base — batch
+#    Same text spoken by Ryan and Aiden for comparison
+# ============================================================
+[[segments]]
+model     = "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit"
+lang_code = "English"
+voices    = ["Ryan", "Aiden"]
+texts     = [
+    "The universe is under no obligation to make sense to you.",
+    "The universe is under no obligation to make sense to you.",
+]
+
+
+# ============================================================
+# 3. CustomVoice — single text
+#    Emotion/style controlled via instruct
+# ============================================================
+[[segments]]
+model    = "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit"
+voice    = "Vivian"
+instruct = "明るく元気に、少し興奮気味に"
+text     = "新しいプロジェクトが始まりました！みなさん、一緒に頑張りましょう！"
+
+
+# ============================================================
+# 4. CustomVoice — batch
+#    Per-text speaker and emotion combinations
+# ============================================================
+[[segments]]
+model     = "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit"
+lang_code = "English"
+voices    = ["Ryan",              "Vivian"              ]
+instructs = ["Calm and composed", "Warm and encouraging"]
+texts     = [
+    "Ladies and gentlemen, please fasten your seatbelts.",
+    "You're doing a wonderful job. Keep it up!",
+]
+
+
+# ============================================================
+# 5. VoiceDesign — single text
+#    Design a voice from scratch using instruct
+# ============================================================
+[[segments]]
+model     = "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-bf16"
+lang_code = "English"
+instruct  = "A deep, authoritative male newscaster voice with measured pacing."
+text      = "Breaking news: scientists have discovered a new species of deep-sea creature off the coast of Japan."
+
+
+# ============================================================
+# 6. VoiceDesign — batch
+#    Multiple voice designs generated in a single pass
+# ============================================================
+[[segments]]
+model     = "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-bf16"
+lang_code = "English"
+instructs = [
+    "A cheerful young female voice with high energy and bright tone.",
+    "A slow, gentle elderly male voice with a warm and wise quality.",
+]
+texts = [
+    "Good morning, everyone! Are you ready to have an amazing day?",
+    "Good morning, everyone! Are you ready to have an amazing day?",
+]

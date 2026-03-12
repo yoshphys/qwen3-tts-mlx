@@ -1,0 +1,13 @@
+[project]
+name = "qwen3-tts-xlm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mlx-audio",
+    "soundfile>=0.13.1",
+]
+
+[tool.uv.sources]
+mlx-audio = { git = "https://github.com/Blaizzy/mlx-audio.git" }
