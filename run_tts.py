@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# Bootstrap: re-exec with .venv Python if not already inside it
+import os as _os, sys as _sys
+_here = _os.path.dirname(_os.path.abspath(__file__))
+_venv_py = _os.path.join(_here, ".venv", "bin", "python3")
+if _os.path.exists(_venv_py) and not _sys.prefix.startswith(_os.path.join(_here, ".venv")):
+    _os.execv(_venv_py, [_venv_py] + _sys.argv)
+del _os, _sys, _here, _venv_py
+
 """
 Wrapper script: reads a TOML config and generates TTS for each segment.
 

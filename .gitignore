@@ -19,6 +19,9 @@ models/
 hf_cache/
 ~/.cache/huggingface/
 
+# Examples
+example/
+
 # Audio output files
 *.wav
 *.mp3
