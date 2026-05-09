@@ -1,5 +1,8 @@
 # qwen3-tts-mlx
 
+> **This repository is archived.**
+> Development has moved to [yoshphys/mlx-tts](https://github.com/yoshphys/mlx-tts), which provides a more general TTS interface for Apple Silicon.
+
 Python scripts for running [Qwen3-TTS](https://huggingface.co/collections/Qwen/qwen3-tts-6841b85e0ef8f47fa3e0a5a0) on Apple Silicon via [mlx-audio](https://github.com/Blaizzy/mlx-audio).
 
 Two entry points are provided:
